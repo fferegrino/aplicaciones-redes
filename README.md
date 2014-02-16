@@ -9,7 +9,7 @@ aplicaciones-redes
 #### Práctica 1: "FTP" [Java / C#]
 
 [NetBeans/ftp Java](/netbeans-redes/src/ftp)  
-[Visual Studio/ftp C#](//visualstudio-redes)
+[Visual Studio/ftp C#](/visualstudio-redes)
 
 ***
 
