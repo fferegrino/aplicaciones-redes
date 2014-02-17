@@ -17,6 +17,7 @@ build
 *.ncb
 *.log
 *.pdb
+*.suo
 *.vcproj.*.user
 [Dd]ebug
 [Rr]elease

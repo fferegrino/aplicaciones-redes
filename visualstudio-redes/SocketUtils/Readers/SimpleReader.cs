@@ -10,7 +10,7 @@ namespace SocketUtils.Readers
     public class SimpleReader
     {
         private readonly int bufferSize;
-        private readonly Socket s;
+        protected readonly Socket s;
 
         public int BufferSize { get { return this.bufferSize; } }
 
@@ -36,6 +36,21 @@ namespace SocketUtils.Readers
             }
             this.s = s;
             buffer = new byte[bufferSize];
+        }
+
+        public int ReadBytes(byte[] b)
+        {
+            return s.Receive(b);
+        }
+
+        public string ReadString()
+        {
+            int size = ReadInt32();
+            byte []b = new byte[size];
+            s.Receive(b);
+            char[] chars = new char[b.Length / sizeof(char)];
+            System.Buffer.BlockCopy(b, 0, chars, 0, b.Length);
+            return new string(chars);
         }
 
         public int ReadInt32()
