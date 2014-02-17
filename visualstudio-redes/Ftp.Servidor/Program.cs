@@ -1,6 +1,7 @@
 ﻿using SocketUtils.Readers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -15,8 +16,8 @@ namespace Ftp.Servidor
         {
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Loopback, 4040);
             Socket ss = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            string pathName = "C:/ftp/cs/";
 
-            
 
             try
             {
@@ -27,11 +28,17 @@ namespace Ftp.Servidor
                     Console.WriteLine("Servidor escuchando por conexiones");
                     Socket cliente = ss.Accept();
                     Console.WriteLine("Conexion aceptada " + cliente.LocalEndPoint.ToString());
-                    SimpleReader sr = new SimpleReader(cliente);
+                    FileReader sr = new FileReader(cliente);
 
 
                     int f = sr.ReadInt32();
-                    Console.WriteLine("Files: " + f);
+
+                    for (int i = 0; i < f; i++)
+                    {
+                        string fileName = sr.ReadString();
+                        Console.WriteLine("\t"+fileName);
+                        sr.ReadFile(Path.Combine(pathName, fileName));
+                    }
 
 
                     Console.WriteLine("Conexion terminada " + cliente.LocalEndPoint.ToString());

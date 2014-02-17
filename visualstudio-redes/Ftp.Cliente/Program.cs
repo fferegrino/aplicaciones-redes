@@ -1,6 +1,7 @@
 ﻿using SocketUtils.Writers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -27,9 +28,14 @@ namespace Ftp.Cliente
                     IPEndPoint remotePoint = new IPEndPoint(IPAddress.Loopback, 4040);
                     Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     s.Connect(remotePoint);
-                    SimpleWriter sw = new SimpleWriter(s);
+                    FileWriter sw = new FileWriter(s);
 
                     sw.WriteInt32(fileDialog.FileNames.Count());
+                    for (int i = 0; i < fileDialog.FileNames.Count(); i++)
+                    {
+                        sw.WriteString(Path.GetFileName(fileDialog.FileNames[i]));
+                        sw.WriteFile(fileDialog.FileNames[i]);
+                    }
 
                     s.Shutdown(SocketShutdown.Both);
                     s.Close();

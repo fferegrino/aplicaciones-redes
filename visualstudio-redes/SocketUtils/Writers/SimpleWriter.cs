@@ -10,7 +10,7 @@ namespace SocketUtils.Writers
     public class SimpleWriter
     {
         private readonly int bufferSize;
-        private readonly Socket s;
+        protected readonly Socket s;
 
         public int BufferSize { get { return this.bufferSize; } }
 
@@ -36,6 +36,20 @@ namespace SocketUtils.Writers
             }
             this.s = s;
             buffer = new byte[bufferSize];
+        }
+
+        public void WriteBytes(byte[] value)
+        {
+            WriteInt32(value.Length);
+        }
+
+        public void WriteString(string value)
+        {
+            byte[] bytes = new byte[value.Length * sizeof(char)];
+            System.Buffer.BlockCopy(value.ToCharArray(), 0, bytes, 0, bytes.Length);
+            WriteInt32(bytes.Length);
+            s.Send(bytes);
+            
         }
 
         public void WriteInt32(int value)
