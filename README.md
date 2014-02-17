@@ -6,9 +6,10 @@ aplicaciones-redes
 
 ##### Las prácticas son las siguientes:
 
-#### Práctica 1: "FTP" [Java]
+#### Práctica 1: "FTP" [Java / C#]
 
-[NetBeans/ftp](/netbeans-redes/src/ftp)
+[NetBeans/ftp Java](/netbeans-redes/src/ftp)  
+[Visual Studio/ftp C#](/visualstudio-redes)
 
 ***
 
@@ -17,3 +18,5 @@ aplicaciones-redes
 [NetBeans/carrito](/netbeans-redes/src/carrito)
 
 ***
+
+#### Extras
