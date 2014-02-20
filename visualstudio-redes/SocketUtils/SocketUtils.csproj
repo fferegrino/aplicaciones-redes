@@ -46,8 +46,10 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Readers\FileReader.cs" />
+    <Compile Include="Readers\ObjectReader.cs" />
     <Compile Include="Readers\SimpleReader.cs" />
     <Compile Include="Writers\FileWriter.cs" />
+    <Compile Include="Writers\ObjectWriter.cs" />
     <Compile Include="Writers\SimpleWriter.cs" />
   </ItemGroup>
   <ItemGroup>

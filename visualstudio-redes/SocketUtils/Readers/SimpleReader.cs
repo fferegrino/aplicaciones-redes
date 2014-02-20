@@ -38,9 +38,9 @@ namespace SocketUtils.Readers
             buffer = new byte[bufferSize];
         }
 
-        public int ReadBytes(byte[] b)
+        public int ReadBytes(byte[] b, int qty)
         {
-            return s.Receive(b);
+            return s.Receive(b,qty,SocketFlags.None);
         }
 
         public string ReadString()
@@ -56,6 +56,7 @@ namespace SocketUtils.Readers
         public int ReadInt32()
         {
             s.Receive(buffer, 0, 4, SocketFlags.None);
+            
             return BitConverter.ToInt32(buffer, 0);
         }
     }

@@ -40,7 +40,7 @@ namespace SocketUtils.Writers
 
         public void WriteBytes(byte[] value)
         {
-            WriteInt32(value.Length);
+            s.Send(value);
         }
 
         public void WriteString(string value)
