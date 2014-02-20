@@ -1,0 +1,9 @@
+﻿<Application x:Class="Carrito.Wpf.Cliente.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:Carrito.Wpf.Cliente.ViewModels"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <viewModels:CarritoViewModel x:Key="vm"></viewModels:CarritoViewModel>
+    </Application.Resources>
+</Application>
