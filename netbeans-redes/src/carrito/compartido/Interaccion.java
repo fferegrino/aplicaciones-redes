@@ -13,5 +13,6 @@ public class Interaccion {
     public static final int SOLICITUD_CARRITO = 1;
     public static final int CONFIRMAR_COMPRA = 2;
     public static final int PRODUCTO_ELEGIDO = 3;
+    public static final int TRANSACCION_CORRECTA = 4;
     
 }

@@ -5,6 +5,7 @@
 package carrito.servidor;
 
 import carrito.compartido.Interaccion;
+import carrito.compartido.Orden;
 import carrito.compartido.Producto;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,7 +26,7 @@ public class Servidor {
         ServerSocket ss = new ServerSocket(4040);
         int option = Interaccion.SALIR;
 
-        
+
 
         // <editor-fold defaultstate="collapsed" desc="Productos">
         
@@ -45,11 +46,11 @@ public class Servidor {
             ObjectOutputStream os = new ObjectOutputStream(s.getOutputStream());
             ObjectInputStream is = new ObjectInputStream(s.getInputStream());
             os.flush();
-
-            System.out.println("Cliente aceptado " +  s.getInetAddress());
+            
+            System.out.println("Cliente aceptado " + s.getInetAddress());
             option = is.readInt();
-
-
+            
+            
             switch (option) {
                 case Interaccion.SOLICITUD_CARRITO:
                     System.out.println("Solicitud carrito");
@@ -59,12 +60,15 @@ public class Servidor {
                     }
                     break;
                 case Interaccion.CONFIRMAR_COMPRA:
-                    
+                    Orden o = (Orden) is.readObject();
+                    Producto p = prods.get(o.getProductoId());
+                    p.setExistencia(p.getExistencia() - o.getCantidad());
+                    os.writeInt(Interaccion.TRANSACCION_CORRECTA);
                     break;
             }
-
+            
             System.out.println("Solicitud de " + s.getInetAddress() + " terminada");
-
+            
             os.close();
             is.close();
             s.close();
