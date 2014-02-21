@@ -9,6 +9,7 @@ namespace Carrito.Shared.Entidades
     [Serializable]
     public class Producto
     {
+        public int ProductId { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public int CantidadDisponible { get; set; }

@@ -26,6 +26,7 @@ namespace Carrito.Servidor
             {
                 productos.Add(new Producto()
                 {
+                    ProductId = i,
                     Nombre = "Producto servidor" + i,
                     Precio = (decimal)i,
                     CantidadDisponible = i * 10,
@@ -42,7 +43,8 @@ namespace Carrito.Servidor
                 {
                     Console.WriteLine("Servidor escuchando por conexiones");
                     Socket cliente = ss.Accept();
-                    Console.WriteLine("Conexion aceptada " + cliente.LocalEndPoint.ToString());
+                    string descCliente = cliente.LocalEndPoint.ToString();
+                    Console.WriteLine("Conexion aceptada " + descCliente);
                     ObjectWriter w = new ObjectWriter(cliente);
                     ObjectReader r = new ObjectReader(cliente);
 
@@ -50,15 +52,20 @@ namespace Carrito.Servidor
                     switch (transaccion)
                     {
                         case Transacciones.SolicitarCarrito:
-                            Console.WriteLine("Solicitud de carrito por: " + cliente.LocalEndPoint.ToString());
+                            Console.WriteLine("\tSolicitud de carrito por: " + descCliente);
                             w.WriteInt32(productos.Count);
                             for (int i = 0; i < productos.Count; i++)
                             {
                                 w.WriteObject<Producto>(productos[i]);
                             }
                             break;
+                        case Transacciones.RealizarCompra:
+                            Console.WriteLine("\tOrden de compra de " + descCliente);
+                            Orden o = r.ReadObject<Orden>();
+                            productos[o.ProductId].CantidadDisponible -= o.Cantidad;
+                            break;
                     }
-                    Console.WriteLine("Conexion terminada " + cliente.LocalEndPoint.ToString());
+                    Console.WriteLine("Conexion terminada " + descCliente);
                     cliente.Shutdown(SocketShutdown.Both);
                     cliente.Close();
                 }

@@ -39,5 +39,21 @@ namespace Carrito.Wpf.Cliente.Models
             return resultado;
         }
 
+        public int RealizaCompra(int productId, int cantidad)
+        {
+            IPEndPoint remotePoint = new IPEndPoint(IPAddress.Loopback, 4040);
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            s.Connect(remotePoint);
+            ObjectReader r = new ObjectReader(s);
+            ObjectWriter w = new ObjectWriter(s);
+
+            w.WriteInt32((int)Transacciones.RealizarCompra);
+            Orden o = new Orden { ProductId = productId, Cantidad = cantidad };
+            w.WriteObject<Orden>(o);
+            s.Shutdown(SocketShutdown.Both);
+            s.Close();
+            return 1;
+        }
+
     }
 }

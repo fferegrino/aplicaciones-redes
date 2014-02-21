@@ -7,7 +7,6 @@
 
     <Window.Resources>
 
-
         <DataTemplate x:Key="dataTemplate">
             <Grid Height="70">
                 <Grid.ColumnDefinitions>
@@ -24,7 +23,8 @@
                 <Rectangle Grid.Row="1" Grid.Column="1" Fill="Red"></Rectangle>
                 <StackPanel Margin="10,0" Grid.Row="1" Grid.Column="2">
                     <TextBlock Text="{Binding Nombre}" FontSize="20"></TextBlock>
-                    <TextBlock Text="{Binding Precio, StringFormat='#,#0.00'}" FontSize="15"></TextBlock>
+                    <TextBlock Text="{Binding Precio, StringFormat='#,#0.00'}" FontSize="15"></TextBlock><TextBlock Text="{Binding Precio, StringFormat='#,#0.00'}" FontSize="15"></TextBlock>
+                    <TextBlock Text="{Binding CantidadDisponible}" FontSize="15"></TextBlock>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -41,22 +41,31 @@
         </Grid.ColumnDefinitions>
 
         <Menu Grid.Column="0" Grid.ColumnSpan="2">
-            <MenuItem Header="_Servicio">
-                <MenuItem Header="_Conectar..." Command="{Binding ConnectCommand}" />
-                <Separator />
-                <MenuItem Header="_Desconectar" />
-            </MenuItem>
+            <MenuItem Header="_Solicitar carrito" Command="{Binding ConnectCommand}"></MenuItem>
         </Menu>
         <ListView Grid.Row="1" ItemsSource="{Binding Productos}" ItemTemplate="{StaticResource dataTemplate}" SelectionChanged="ListView_SelectionChanged">
 
         </ListView>
-        <ScrollViewer  Grid.Column="2" Grid.Row="2">
-            <StackPanel Margin="10" DataContext="{Binding Elegido}">
+        <Grid Grid.Column="2" Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="50"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Grid.ColumnSpan="2">
+                <StackPanel Margin="10" DataContext="{Binding Elegido}">
 
-                <TextBlock FontSize="50" Text="{Binding Nombre}"></TextBlock>
-                <TextBlock FontSize="25" Text="{Binding Precio, StringFormat='#,#0.00'}"></TextBlock>
-                <TextBlock FontSize="25" Text="{Binding Descripcion}" TextWrapping="Wrap"></TextBlock>
-            </StackPanel>
-        </ScrollViewer>
+                    <TextBlock FontSize="50" Text="{Binding Nombre}"></TextBlock>
+                    <TextBlock FontSize="25" Text="{Binding Precio, StringFormat='#,#0.00'}"></TextBlock>
+                    <TextBlock FontSize="25" Text="{Binding CantidadDisponible}"></TextBlock>
+                    <TextBlock FontSize="25" Text="{Binding Descripcion}" TextWrapping="Wrap"></TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+            <TextBox Grid.Row="1" TextAlignment="Right" FontSize="35" Text="{Binding CantidadSolicitada, Mode=TwoWay}"></TextBox>
+            <Button Grid.Row="1" Grid.Column="1" Command="{Binding ComprarCommand}" Content="Comprar"></Button>
+        </Grid>
     </Grid>
 </Window>

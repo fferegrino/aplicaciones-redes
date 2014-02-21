@@ -20,6 +20,15 @@ namespace Carrito.Wpf.Cliente.ViewModels
             set { elegido = value; RaiseChange(); }
         }
 
+        private int cantidadSolicitada;
+
+        public int CantidadSolicitada
+        {
+            get { return cantidadSolicitada; }
+            set { cantidadSolicitada = value; RaiseChange(); }
+        }
+        
+
 
         private ObservableCollection<Producto> productos;
 
@@ -43,6 +52,25 @@ namespace Carrito.Wpf.Cliente.ViewModels
                         Productos = model.RecuperaProductos();
                     });
                 } return connectCommand;
+            }
+        }
+
+        private ActionCommand comprarCommand;
+        public ActionCommand ComprarCommand
+        {
+            get
+            {
+                if (comprarCommand == null)
+                {
+                    comprarCommand = new ActionCommand(() =>
+                    {
+                        if (CantidadSolicitada > 0)
+                        {
+                            model.RealizaCompra(Elegido.ProductId, CantidadSolicitada);
+                            Productos = model.RecuperaProductos();
+                        }
+                    });
+                } return comprarCommand;
             }
         }
 
