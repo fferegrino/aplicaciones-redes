@@ -5,8 +5,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -28,7 +26,8 @@ public class Anuncio {
             s.joinGroup(gpo);
             while(true){
                 String msg = "Hola";
-                DatagramPacket dp = new DatagramPacket(buf, length, gpo, 1234);
+                DatagramPacket dp = new DatagramPacket(msg.getBytes(), msg.getBytes().length, gpo, 1234);
+                System.out.println("Enviando datagrama");
                 s.send(dp);
                 try {
                     Thread.sleep(5000);
