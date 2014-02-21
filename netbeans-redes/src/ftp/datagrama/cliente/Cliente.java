@@ -72,9 +72,11 @@ public class Cliente {
                         // Volvemos a leer
                         resultadoLectura = fis.read(buffer);
                         // Escribimos el resultado de la lecturaresultadoLec = intToBytes(resultadoLectura);
+                        resultadoLec = intToBytes(resultadoLectura);
                         dp.setData(resultadoLec, 0, 4);
                         cl.send(dp);
                     }
+                    fis.close();
                 }
 
             } catch (UnknownHostException ex) {
