@@ -41,7 +41,7 @@ public class Cliente {
             File[] files = fc.getSelectedFiles();
             try {
                 // Apertura del socket y los flujos IO
-                Socket s = new Socket(InetAddress.getByName("8.25.100.155"), 4040);
+                Socket s = new Socket(InetAddress.getByName("localhost"), 4040);
                 DataInputStream is = new DataInputStream(s.getInputStream());
                 DataOutputStream os = new DataOutputStream(s.getOutputStream());
 s.setSoTimeout(3000);
