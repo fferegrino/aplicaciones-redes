@@ -36,6 +36,8 @@ public class Servidor {
             Producto p = new Producto();
             p.setNombre("Producto " + x);
             p.setId(x);
+            p.setPrecio(40.40);
+            p.setDescripcion("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas suscipit eleifend urna, sit amet tempus elit viverra id. Duis ultricies eu augue eu consequat. Nunc lectus quam, mollis id augue.");
             p.setExistencia(20);
             prods.add(p);
         }

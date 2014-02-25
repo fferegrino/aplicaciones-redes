@@ -1,11 +1,14 @@
 package carrito.cliente;
 
+import carrito.compartido.Orden;
 import carrito.compartido.Producto;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 
 /**
@@ -14,18 +17,19 @@ import javax.swing.ListModel;
  */
 public class CarritoGUI extends javax.swing.JFrame {
 
+    private static int elegido;
     /**
      * Cliente:
      */
     private Cliente cliente;
-    
     DefaultListModel<Producto> defaultModelProducto;
-    
+
     /**
      * Creates new form CarritoGUI
      */
     public CarritoGUI() {
         initComponents();
+        elegido = -1;
         defaultModelProducto = new DefaultListModel<Producto>();
         listaProductos.setModel(defaultModelProducto);
         cliente = new Cliente();
@@ -43,11 +47,24 @@ public class CarritoGUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         listaProductos = new javax.swing.JList();
         actualizaButton = new javax.swing.JButton();
+        panelCompras = new javax.swing.JPanel();
+        jTextField1 = new javax.swing.JTextField();
+        buttonCompra = new javax.swing.JButton();
+        labelNombre = new javax.swing.JLabel();
+        imagenLabel = new javax.swing.JLabel();
+        labelPrecio = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jDescription = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         listaProductos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         listaProductos.setName(""); // NOI18N
+        listaProductos.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                productosSelectionChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(listaProductos);
 
         actualizaButton.setText("Actualizar carrito");
@@ -57,24 +74,105 @@ public class CarritoGUI extends javax.swing.JFrame {
             }
         });
 
+        jTextField1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jTextField1.setText("0");
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+
+        buttonCompra.setText("Comprar");
+        buttonCompra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CompraPerformed(evt);
+            }
+        });
+
+        labelNombre.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        labelNombre.setText("Producto");
+
+        imagenLabel.setText("jLabel2");
+        imagenLabel.setMaximumSize(new java.awt.Dimension(34, 34));
+        imagenLabel.setMinimumSize(new java.awt.Dimension(34, 34));
+
+        labelPrecio.setFont(new java.awt.Font("Tahoma", 2, 18)); // NOI18N
+        labelPrecio.setText("$ 00.00");
+
+        jDescription.setColumns(20);
+        jDescription.setLineWrap(true);
+        jDescription.setRows(5);
+        jDescription.setWrapStyleWord(true);
+        jDescription.setEnabled(false);
+        jScrollPane2.setViewportView(jDescription);
+
+        javax.swing.GroupLayout panelComprasLayout = new javax.swing.GroupLayout(panelCompras);
+        panelCompras.setLayout(panelComprasLayout);
+        panelComprasLayout.setHorizontalGroup(
+            panelComprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelComprasLayout.createSequentialGroup()
+                .addGroup(panelComprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelComprasLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(panelComprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelComprasLayout.createSequentialGroup()
+                                .addComponent(jTextField1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(buttonCompra))
+                            .addGroup(panelComprasLayout.createSequentialGroup()
+                                .addComponent(imagenLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(panelComprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(labelNombre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(labelPrecio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(panelComprasLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        panelComprasLayout.setVerticalGroup(
+            panelComprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelComprasLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelComprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(imagenLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelComprasLayout.createSequentialGroup()
+                        .addComponent(labelNombre)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(labelPrecio)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelComprasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonCompra)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(actualizaButton, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE))
-                .addContainerGap(236, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                    .addComponent(actualizaButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(panelCompras, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(actualizaButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(actualizaButton))
+                    .addComponent(panelCompras, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -84,14 +182,43 @@ public class CarritoGUI extends javax.swing.JFrame {
     private void actualizaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actualizaButtonActionPerformed
         try {
             ArrayList<Producto> solicitaProductos = cliente.solicitaProductos();
-                defaultModelProducto.clear();
-            for(Producto p : solicitaProductos){
+            defaultModelProducto.clear();
+            for (Producto p : solicitaProductos) {
                 defaultModelProducto.addElement(p);
             }
         } catch (Exception ex) {
-            
         }
     }//GEN-LAST:event_actualizaButtonActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void productosSelectionChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_productosSelectionChanged
+        Producto p = (Producto) listaProductos.getSelectedValue();
+        setValues(p);
+    }//GEN-LAST:event_productosSelectionChanged
+
+    private void CompraPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CompraPerformed
+        try {
+            int qty = Integer.parseInt(jTextField1.getText());
+            cliente.realizaOrden(elegido, qty);
+        } catch (Exception ex) {
+            MessageBox("Error al registrar la compra", "Error!");
+        }
+    }//GEN-LAST:event_CompraPerformed
+
+    private void MessageBox(String msg, String titulo) {
+
+        JOptionPane.showMessageDialog(this, msg, titulo, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void setValues(Producto p) {
+        elegido = p.getId();
+        labelNombre.setText(p.getNombre());
+        labelPrecio.setText(String.format("$%2.2f", p.getPrecio()));
+        jDescription.setText(p.getDescripcion());
+    }
 
     /**
      * @param args the command line arguments
@@ -129,7 +256,15 @@ public class CarritoGUI extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton actualizaButton;
+    private javax.swing.JButton buttonCompra;
+    private javax.swing.JLabel imagenLabel;
+    private javax.swing.JTextArea jDescription;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel labelNombre;
+    private javax.swing.JLabel labelPrecio;
     private javax.swing.JList listaProductos;
+    private javax.swing.JPanel panelCompras;
     // End of variables declaration//GEN-END:variables
 }
