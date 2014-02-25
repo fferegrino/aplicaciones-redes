@@ -11,6 +11,7 @@ import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,11 +22,11 @@ import java.util.logging.Logger;
  */
 public class Servidor {
 
-    
-    private static HashMap<String, InetAddress> usuarios;
+    private static ArrayList<Usuario> usuarios;
+    //private static HashMap<String, InetAddress> usuarios;
 
     public static void main(String[] args) {
-        usuarios = new HashMap<String, InetAddress>();
+        usuarios = new ArrayList<Usuario>(); //new HashMap<String, InetAddress>();
         try {
             MulticastSocket socket = new MulticastSocket(Puertos.SERVIDOR_MULTICAST);
             socket.setTimeToLive(50);
