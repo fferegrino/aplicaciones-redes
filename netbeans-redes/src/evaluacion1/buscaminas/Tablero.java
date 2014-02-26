@@ -10,18 +10,19 @@ import java.util.Random;
  * @author usuario
  */
 public class Tablero implements Serializable {
-
+    
     private int nivel;
     private int x;
     private int y;
     private int minas;
     private int descubiertas;
+    private int marcadas;
     private int estadoJuego;
     int[][] tablero;
     boolean[][] visibles;
     boolean[][] marcas;
     private static Random random = new Random(new Date().getTime());
-
+    
     public Tablero(int nivel) {
         descubiertas = 0;
         switch (nivel) {
@@ -50,13 +51,13 @@ public class Tablero implements Serializable {
         tablero = new int[x][y];
         visibles = new boolean[x][y];
         marcas = new boolean[x][y];
-//        for (int i = 0; i < x; i++) {
-//            Arrays.fill(visibles[i], true);
-//        }
+        for (int i = 0; i < x; i++) {
+            Arrays.fill(visibles[i], true);
+        }
         rellenaMinas();
         procesaTablero();
     }
-
+    
     private void rellenaMinas() {
         int m = minas;
         int xx, yy;
@@ -69,7 +70,7 @@ public class Tablero implements Serializable {
             m--;
         }
     }
-
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -80,7 +81,7 @@ public class Tablero implements Serializable {
             sb.append(String.format(" %2d ", i + 1));
         }
         sb.append("\n");
-
+        
         for (int i = 0; i < getX(); i++) {
             sb.append(String.format(" %2d ", i + 1));
             for (int j = 0; j < getY(); j++) {
@@ -98,7 +99,7 @@ public class Tablero implements Serializable {
             }
             sb.append("\n");
         }
-
+        
         return sb.toString();
     }
 
@@ -185,17 +186,17 @@ public class Tablero implements Serializable {
     public void setEstadoJuego(int estadoJuego) {
         this.estadoJuego = estadoJuego;
     }
-
+    
     public void ponMarca(int x, int y) {
         hazJugada(x, y, 1);
     }
-
+    
     public void destapa(int i, int j) {
         if (tablero[i][j] == -1 || visibles[i][j]) {
             return;
         }
         visibles[i][j] = true;
-
+        descubiertas++;
         if (tablero[i][j] > 0) {
             return;
         }
@@ -224,7 +225,7 @@ public class Tablero implements Serializable {
             destapa(i + 1, j - 1);
         }
     }
-
+    
     private void procesaTablero() {
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
@@ -258,7 +259,7 @@ public class Tablero implements Serializable {
             }
         }
     }
-
+    
     public void hazJugada(int x, int y, int t) {
         if (t == 0) // Tiro
         {
@@ -269,11 +270,18 @@ public class Tablero implements Serializable {
                 estadoJuego = -1;
             } else {
                 destapa(x, y);
+                if (minas + descubiertas + marcadas == x * y) {
+                    for (int i = 0; i < x; i++) {
+                        Arrays.fill(visibles, true);
+                    }
+                    estadoJuego = 1;
+                }
             }
         } else {
             marcas[x][y] = !marcas[x][y];
             if (tablero[x][y] == -1) {
                 minas += marcas[x][y] ? -1 : 1;
+                marcadas += marcas[x][y] ? 1 : -1;
             }
             if (minas == 0) {
                 estadoJuego = 1;
