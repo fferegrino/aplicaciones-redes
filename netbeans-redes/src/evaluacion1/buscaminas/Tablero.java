@@ -51,9 +51,9 @@ public class Tablero implements Serializable {
         tablero = new int[x][y];
         visibles = new boolean[x][y];
         marcas = new boolean[x][y];
-        for (int i = 0; i < x; i++) {
+        /*for (int i = 0; i < x; i++) {
             Arrays.fill(visibles[i], true);
-        }
+        }*/
         rellenaMinas();
         procesaTablero();
     }
@@ -265,14 +265,14 @@ public class Tablero implements Serializable {
         {
             if (tablero[x][y] == -1) {
                 for (int i = 0; i < x; i++) {
-                    Arrays.fill(visibles, true);
+                    Arrays.fill(visibles[i], true);
                 }
                 estadoJuego = -1;
             } else {
                 destapa(x, y);
                 if (minas + descubiertas + marcadas == x * y) {
                     for (int i = 0; i < x; i++) {
-                        Arrays.fill(visibles, true);
+                        Arrays.fill(visibles[i], true);
                     }
                     estadoJuego = 1;
                 }

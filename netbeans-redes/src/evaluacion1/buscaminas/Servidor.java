@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author (at)fferegrino
+
  */
 public class Servidor {
 
@@ -36,7 +36,7 @@ public class Servidor {
 
                 if (j != null) {
                     if (j.getX() < 0 && j.getY() < 0) {
-                        System.out.println("Nuevo jeugo");
+                        System.out.println("Nuevo juego");
                         juego = new Tablero(j.getTipo());
                     } else {
                         juego.hazJugada(j.getX(), j.getY(), j.getTipo());
