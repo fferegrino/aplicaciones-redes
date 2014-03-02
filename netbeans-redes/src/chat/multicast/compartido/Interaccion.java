@@ -11,4 +11,7 @@ public class Interaccion {
     public static final int MENSAJE_GRUPAL = 3;
     public static final int MENSAJE_PRIVADO = 4;
     public static final int DESPEDIDA_USUARIO = 5;
+    public static final int PING = 5;
+    
+    public static final int MAX_BUFFER_SIZE = 1024;
 }

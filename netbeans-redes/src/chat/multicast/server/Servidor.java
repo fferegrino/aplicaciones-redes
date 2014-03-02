@@ -30,22 +30,29 @@ public class Servidor {
         try {
             MulticastSocket socket = new MulticastSocket(Puertos.SERVIDOR_MULTICAST);
             socket.setTimeToLive(50);
-            socket.joinGroup(InetAddress.getByName("228.1.1.1"));
-
-            while (true) {log("Escuchando");
+            socket.joinGroup(InetAddress.getByName("229.2.2.2"));
+             
+            while (true) {
+                log("Escuchando " + socket.getNetworkInterface().getDisplayName());
                 DatagramPacket paquete = new DatagramPacket(new byte[1024], 1024);
                 socket.receive(paquete);
                 byte[] data = paquete.getData();
                 log("Conexion");
-                if (data[0] == Interaccion.SALUDO_CLIENTE) {
-                    InetAddress cliente = paquete.getAddress();
-                    int nameLen = data[1];//ByteBuffer.allocateDirect(4).wrap(data, 1, 4).getInt();
-                    String usuario = new String(data, 2, nameLen);
-                    log(usuario);
-                    Socket s = new Socket(cliente, Puertos.CLIENTE_FLUJO);
-                    DataOutputStream bos = new DataOutputStream(s.getOutputStream());
-                    bos.writeInt(12);
-                    s.close();;
+                switch (data[0]) {
+                    case Interaccion.SALUDO_CLIENTE:
+                        InetAddress cliente = paquete.getAddress();
+                        int nameLen = data[1];//ByteBuffer.allocateDirect(4).wrap(data, 1, 4).getInt();
+                        String usuario = new String(data, 2, nameLen);
+                        log(usuario);
+
+//                    Socket s = new Socket(cliente, Puertos.CLIENTE_FLUJO);
+//                    DataOutputStream bos = new DataOutputStream(s.getOutputStream());
+//                    
+//                    s.close();;
+                        break;
+                    case Interaccion.PING:
+                        log("Ping");
+                        break;
                 }
             }
 
