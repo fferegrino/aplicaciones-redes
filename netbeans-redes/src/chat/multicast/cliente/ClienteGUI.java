@@ -6,32 +6,45 @@ package chat.multicast.cliente;
 
 import chat.multicast.compartido.Interaccion;
 import chat.multicast.compartido.Puertos;
-import java.io.DataInputStream;
+import chat.multicast.compartido.Usuario;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Antonio
  */
-public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListener{
+public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListener {
     
     private MulticastSocket socket;
     private ReceptorMensajes receiver;
     ServerSocket serverSocket;
     private InetAddress multicastAddress;
+    ArrayList<Usuario> usuarios;
+    Usuario usuarioSeleccionado;
+    DefaultListModel<Usuario> model;
+    private String nombreUsuario;
 
     /**
      * Creates new form ClienteGUI
      */
     public ClienteGUI() {
         initComponents();
+        
+        nombreUsuario = JOptionPane.showInputDialog("Nombre de usuario");
+        if (nombreUsuario == null) {
+            System.exit(1);
+        }
+        menuUser.setText(nombreUsuario);
     }
 
     /**
@@ -49,8 +62,13 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
         jScrollPane1 = new javax.swing.JScrollPane();
         message = new javax.swing.JTextArea();
         buttonEnviar = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        listaUsuarios = new javax.swing.JList();
+        jButton1 = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        chatView = new javax.swing.JTextPane();
         jMenuBar3 = new javax.swing.JMenuBar();
-        jMenu4 = new javax.swing.JMenu();
+        menuUser = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
 
@@ -64,16 +82,39 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
 
         message.setColumns(20);
         message.setRows(5);
+        message.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                ClienteGUI.this.keyReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(message);
 
-        buttonEnviar.setText("jButton1");
+        buttonEnviar.setText("Enviar");
         buttonEnviar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonEnviarActionPerformed(evt);
             }
         });
 
-        jMenu4.setText("File");
+        model  = new DefaultListModel<Usuario>();
+        listaUsuarios.setModel(model);
+        listaUsuarios.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                listaUsuariosValueChanged(evt);
+            }
+        });
+        jScrollPane3.setViewportView(listaUsuarios);
+
+        jButton1.setText("Mensaje grupal");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jScrollPane4.setViewportView(chatView);
+
+        menuUser.setText("Chat");
 
         jMenuItem1.setText("Conectar");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -81,17 +122,17 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
                 jMenuItem1ActionPerformed(evt);
             }
         });
-        jMenu4.add(jMenuItem1);
+        menuUser.add(jMenuItem1);
 
-        jMenuItem2.setText("Ping");
+        jMenuItem2.setText("Desconectar");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem2ActionPerformed(evt);
             }
         });
-        jMenu4.add(jMenuItem2);
+        menuUser.add(jMenuItem2);
 
-        jMenuBar3.add(jMenu4);
+        jMenuBar3.add(menuUser);
 
         setJMenuBar(jMenuBar3);
 
@@ -101,15 +142,27 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(buttonEnviar)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(buttonEnviar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(172, Short.MAX_VALUE)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1))
+                    .addComponent(jScrollPane4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1)
                     .addComponent(buttonEnviar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -131,14 +184,29 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
     }//GEN-LAST:event_jMenuItem1ActionPerformed
     
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        ping();
+        disconnect();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
     
     private void buttonEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEnviarActionPerformed
-        
         sendMessage(message.getText());
         message.setText("");
     }//GEN-LAST:event_buttonEnviarActionPerformed
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        usuarioSeleccionado = null;
+    }//GEN-LAST:event_jButton1ActionPerformed
+    
+    private void listaUsuariosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listaUsuariosValueChanged
+        usuarioSeleccionado = (Usuario) listaUsuarios.getSelectedValue();
+        listaUsuarios.clearSelection();
+    }//GEN-LAST:event_listaUsuariosValueChanged
+    
+    private void keyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_keyReleased
+        if (evt.getKeyChar() == '\n') {
+            sendMessage(message.getText().trim());
+            message.setText("");
+        }
+    }//GEN-LAST:event_keyReleased
 
     /**
      * @param args the command line arguments
@@ -176,17 +244,35 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonEnviar;
+    private javax.swing.JTextPane chatView;
+    private javax.swing.JButton jButton1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar3;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JList listaUsuarios;
+    private javax.swing.JMenu menuUser;
     private javax.swing.JTextArea message;
     // End of variables declaration//GEN-END:variables
 
+    private void disconnect() {
+        try {
+            DatagramPacket dp;
+            byte[] data = new byte[Interaccion.MAX_BUFFER_SIZE];
+            data[0] = Interaccion.DESPEDIDA_USUARIO;
+            dp = new DatagramPacket(data, Interaccion.MAX_BUFFER_SIZE, this.multicastAddress, Puertos.SERVIDOR_MULTICAST);
+            socket.send(dp);
+            socket.close();
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+    }
+    
     private void connect(String multicastAddress)
             throws UnknownHostException, IOException {
         this.multicastAddress = InetAddress.getByName(multicastAddress);
@@ -195,30 +281,48 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
         socket = new MulticastSocket(Puertos.SERVIDOR_MULTICAST);
         socket.setTimeToLive(200);
         socket.joinGroup(this.multicastAddress);
-        //socket.setLoopbackMode(true);
         byte[] data = new byte[Interaccion.MAX_BUFFER_SIZE];
 
         // <editor-fold desc="Aviso de conexión">
         data[0] = Interaccion.SALUDO_CLIENTE;
-        byte[] nombre = "Hola".getBytes();
+        byte[] nombre = nombreUsuario.getBytes();
         data[1] = (byte) nombre.length;
         System.arraycopy(nombre, 0, data, 2, nombre.length);
         
         dp = new DatagramPacket(data, Interaccion.MAX_BUFFER_SIZE, this.multicastAddress, Puertos.SERVIDOR_MULTICAST);
         socket.send(dp);
         // </editor-fold>
+        // <editor-fold desc="Recibimos la lista de usuarios ya conectados al chat">
+        usuarios = new ArrayList<Usuario>();
+        recibeUsuarios();
+        // </editor-fold>
+
         receiver = new ReceptorMensajes(socket);
         receiver.addListener(this);
         receiver.start();
     }
     
-    private void ping() {
+    private void recibeUsuarios() {
         try {
-            byte[] data = new byte[Interaccion.MAX_BUFFER_SIZE];
-            data[0] = Interaccion.PING;
-            DatagramPacket dp = new DatagramPacket(data, Interaccion.MAX_BUFFER_SIZE, this.multicastAddress, Puertos.SERVIDOR_MULTICAST);
-            socket.send(dp);
+            ServerSocket ss = new ServerSocket(Puertos.CLIENTE_FLUJO);
+            Socket s = ss.accept();
+            ObjectInputStream is = new ObjectInputStream(s.getInputStream());
+            
+            int usu = is.readInt();
+            
+            for (int i = 0; i < usu; i++) {
+                usuarios.add((Usuario) is.readObject());
+            }
+            
+            for (int i = 0; i < usu; i++) {
+                model.addElement(usuarios.get(i));
+            }
+            
+            s.close();
+        } catch (ClassNotFoundException ce) {
+            System.err.println(ce.getMessage());
         } catch (IOException ex) {
+            System.err.println(ex.getMessage());
         }
     }
     
@@ -227,22 +331,42 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
         if (!message.isEmpty()) {
             try {
                 byte[] data = new byte[Interaccion.MAX_BUFFER_SIZE];
+                int port;
+                InetAddress addr;
+                if (usuarioSeleccionado != null) {
+                    addr = usuarioSeleccionado.getAddress();
+                    port = usuarioSeleccionado.getPuerto();
+                } else {
+                    addr = this.multicastAddress;
+                    port = Puertos.SERVIDOR_MULTICAST;
+                }
 
                 // <editor-fold desc="Aviso de conexión">
                 data[0] = Interaccion.MENSAJE_GRUPAL;
                 byte[] nombre = message.getBytes();
                 System.arraycopy(nombre, 0, data, 1, nombre.length);
                 
-                DatagramPacket dp  = new DatagramPacket(data, Interaccion.MAX_BUFFER_SIZE, this.multicastAddress, Puertos.SERVIDOR_MULTICAST);
+                DatagramPacket dp = new DatagramPacket(data, Interaccion.MAX_BUFFER_SIZE, addr, port);
                 socket.send(dp);
                 
             } catch (IOException ex) {
             }
         }
     }
-
+    
     @Override
     public void nuevoMensajeHandler(NuevoMensajeEvent e) {
-        System.out.println(e.getSender() + " dice: " + e.getTexto());
+        chatView.setText(chatView.getText() + e.getSender() + " dice:\n" + e.getTexto() + "\n");
+    }
+    
+    @Override
+    public void userRemoved(Usuario u) {
+        usuarios.remove(u);
+        model.removeElement(u);
+    }
+    
+    @Override
+    public void userAdded(Usuario u) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

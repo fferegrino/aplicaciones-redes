@@ -4,6 +4,7 @@
  */
 package chat.multicast.cliente;
 
+import chat.multicast.compartido.Usuario;
 import java.util.EventListener;
 
 /**
@@ -12,4 +13,8 @@ import java.util.EventListener;
  */
 public interface NuevoMensajeListener extends EventListener{
     void nuevoMensajeHandler(NuevoMensajeEvent e);
+    
+    void userRemoved(Usuario u);
+    
+    void userAdded(Usuario u);
 }
