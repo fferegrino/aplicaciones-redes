@@ -20,10 +20,10 @@ import java.util.logging.Logger;
  *
  * @author Antonio
  */
-public class ClienteGUI extends javax.swing.JFrame {
-
+public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListener{
+    
     private MulticastSocket socket;
-    private Receiver receiver;
+    private ReceptorMensajes receiver;
     ServerSocket serverSocket;
     private InetAddress multicastAddress;
 
@@ -46,6 +46,9 @@ public class ClienteGUI extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        message = new javax.swing.JTextArea();
+        buttonEnviar = new javax.swing.JButton();
         jMenuBar3 = new javax.swing.JMenuBar();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -58,6 +61,17 @@ public class ClienteGUI extends javax.swing.JFrame {
         jMenuBar1.add(jMenu2);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        message.setColumns(20);
+        message.setRows(5);
+        jScrollPane1.setViewportView(message);
+
+        buttonEnviar.setText("jButton1");
+        buttonEnviar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonEnviarActionPerformed(evt);
+            }
+        });
 
         jMenu4.setText("File");
 
@@ -85,11 +99,21 @@ public class ClienteGUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buttonEnviar)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 279, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(172, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1)
+                    .addComponent(buttonEnviar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -103,12 +127,18 @@ public class ClienteGUI extends javax.swing.JFrame {
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
-
+        
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-
+    
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         ping();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
+    
+    private void buttonEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonEnviarActionPerformed
+        
+        sendMessage(message.getText());
+        message.setText("");
+    }//GEN-LAST:event_buttonEnviarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -145,6 +175,7 @@ public class ClienteGUI extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonEnviar;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu4;
@@ -152,12 +183,14 @@ public class ClienteGUI extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar3;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea message;
     // End of variables declaration//GEN-END:variables
 
     private void connect(String multicastAddress)
             throws UnknownHostException, IOException {
         this.multicastAddress = InetAddress.getByName(multicastAddress);
-
+        
         DatagramPacket dp;
         socket = new MulticastSocket(Puertos.SERVIDOR_MULTICAST);
         socket.setTimeToLive(200);
@@ -174,7 +207,9 @@ public class ClienteGUI extends javax.swing.JFrame {
         dp = new DatagramPacket(data, Interaccion.MAX_BUFFER_SIZE, this.multicastAddress, Puertos.SERVIDOR_MULTICAST);
         socket.send(dp);
         // </editor-fold>
-
+        receiver = new ReceptorMensajes(socket);
+        receiver.addListener(this);
+        receiver.start();
     }
     
     private void ping() {
@@ -184,11 +219,30 @@ public class ClienteGUI extends javax.swing.JFrame {
             DatagramPacket dp = new DatagramPacket(data, Interaccion.MAX_BUFFER_SIZE, this.multicastAddress, Puertos.SERVIDOR_MULTICAST);
             socket.send(dp);
         } catch (IOException ex) {
-            Logger.getLogger(ClienteGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    private void sendMessage(String message){
+    private void sendMessage(String message) {
         
+        if (!message.isEmpty()) {
+            try {
+                byte[] data = new byte[Interaccion.MAX_BUFFER_SIZE];
+
+                // <editor-fold desc="Aviso de conexión">
+                data[0] = Interaccion.MENSAJE_GRUPAL;
+                byte[] nombre = message.getBytes();
+                System.arraycopy(nombre, 0, data, 1, nombre.length);
+                
+                DatagramPacket dp  = new DatagramPacket(data, Interaccion.MAX_BUFFER_SIZE, this.multicastAddress, Puertos.SERVIDOR_MULTICAST);
+                socket.send(dp);
+                
+            } catch (IOException ex) {
+            }
+        }
+    }
+
+    @Override
+    public void nuevoMensajeHandler(NuevoMensajeEvent e) {
+        System.out.println(e.getSender() + " dice: " + e.getTexto());
     }
 }

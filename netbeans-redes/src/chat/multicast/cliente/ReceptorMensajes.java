@@ -10,11 +10,20 @@ import java.util.logging.Level;
  *
  * @author (at)fferegrino
  */
-public class Receiver extends Thread{
+public class ReceptorMensajes extends Thread {
 
     private MulticastSocket multicastSocket;
+    NuevoMensajeListener listener;
+    
+    void addListener(NuevoMensajeListener listener){
+        this.listener = listener;
+    }
+    
+    void removeListener(){
+        this.listener = null;
+    }
 
-    public Receiver(MulticastSocket multicastSocket) {
+    public ReceptorMensajes(MulticastSocket multicastSocket) {
         this.multicastSocket = multicastSocket;
     }
 
@@ -25,14 +34,12 @@ public class Receiver extends Thread{
                 DatagramPacket dp = new DatagramPacket(new byte[Interaccion.MAX_BUFFER_SIZE], Interaccion.MAX_BUFFER_SIZE);
                 multicastSocket.receive(dp);
                 byte[] data = dp.getData();
-                if(data[0] == Interaccion.PING){
-                    System.out.println("Ping");
+                if (data[0] == Interaccion.MENSAJE_GRUPAL) {
+                    NuevoMensajeEvent e = new NuevoMensajeEvent(this, dp.getAddress(), new String(data), dp.getPort());
+                    if(listener != null) listener.nuevoMensajeHandler(e);
                 }
             } catch (IOException ex) {
-                
             }
         }
     }
-
-
 }

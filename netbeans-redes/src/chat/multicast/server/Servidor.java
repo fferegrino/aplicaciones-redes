@@ -37,7 +37,7 @@ public class Servidor {
                 DatagramPacket paquete = new DatagramPacket(new byte[1024], 1024);
                 socket.receive(paquete);
                 byte[] data = paquete.getData();
-                log("Conexion");
+                log("Conexion " + paquete.getSocketAddress());
                 switch (data[0]) {
                     case Interaccion.SALUDO_CLIENTE:
                         InetAddress cliente = paquete.getAddress();
@@ -50,9 +50,8 @@ public class Servidor {
 //                    
 //                    s.close();;
                         break;
-                    case Interaccion.PING:
-                        log("Ping");
-                        break;
+                    default:
+                        System.out.println("Mensaje de " + paquete.getSocketAddress() + " no procesado") ;
                 }
             }
 
