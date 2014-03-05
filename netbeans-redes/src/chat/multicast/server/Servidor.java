@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -22,15 +24,17 @@ public class Servidor {
 
     public static void main(String[] args) {
         usuarios = new ArrayList<Usuario>(); //new HashMap<String, InetAddress>();
-        for(int x = 0; x < 10; x++){
+        for (int x = 0; x < 10; x++) {
             try {
-                Usuario ux = new Usuario(InetAddress.getByName("192.168.1." + (x+1)), 2000, "Usuario " + x);
+                Usuario ux = new Usuario(InetAddress.getByName("192.168.1." + (x + 1)), 2000, "Usuario " + x);
                 usuarios.add(ux);
             } catch (UnknownHostException ex) {
                 Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         try {
+            //SocketAddress sa = new InetSocketAddress("192.168.1.70", Puertos.SERVIDOR_MULTICAST);
+
             MulticastSocket socket = new MulticastSocket(Puertos.SERVIDOR_MULTICAST);
             socket.setTimeToLive(50);
             socket.joinGroup(InetAddress.getByName("229.2.2.2"));
@@ -45,7 +49,7 @@ public class Servidor {
                 switch (data[0]) {
                     case Interaccion.SALUDO_CLIENTE:
                         Usuario nuevo = aceptaUsuario(data, cliente, puerto);
-                        enviaListaUsuarios(nuevo);
+                        //enviaListaUsuarios(nuevo);
                         usuarios.add(nuevo);
                         break;
                     case Interaccion.DESPEDIDA_USUARIO:

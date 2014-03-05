@@ -36,7 +36,7 @@ public class ReceptorMensajes extends Thread {
                 byte[] data = dp.getData();
                 switch (data[0]) {
                     case Interaccion.MENSAJE_GRUPAL:
-                    case Interaccion.MENSAJE_PRIVADO:
+                    //case Interaccion.MENSAJE_PRIVADO:
                         NuevoMensajeEvent e = new NuevoMensajeEvent(this, dp.getAddress(), new String(data), dp.getPort());
                         if (listener != null) {
                             listener.nuevoMensajeHandler(e);

@@ -11,9 +11,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
@@ -276,10 +278,10 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
     private void connect(String multicastAddress)
             throws UnknownHostException, IOException {
         this.multicastAddress = InetAddress.getByName(multicastAddress);
-        
         DatagramPacket dp;
-        socket = new MulticastSocket(Puertos.SERVIDOR_MULTICAST);
+        socket = new MulticastSocket(Puertos.CLIENTE_MULTICAST);//(sa);
         socket.setTimeToLive(200);
+        //socket.setLoopbackMode(false);
         socket.joinGroup(this.multicastAddress);
         byte[] data = new byte[Interaccion.MAX_BUFFER_SIZE];
 
@@ -317,11 +319,13 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
             for (int i = 0; i < usu; i++) {
                 model.addElement(usuarios.get(i));
             }
-            
+            is.close();
             s.close();
+            ss.close();
         } catch (ClassNotFoundException ce) {
             System.err.println(ce.getMessage());
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
     }
