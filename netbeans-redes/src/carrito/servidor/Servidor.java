@@ -19,6 +19,8 @@ import java.util.ArrayList;
  */
 public class Servidor {
 
+    static String photoFolder = "C:\\carrito\\servidor\\pic\\";
+    
     /**
      * @param args the command line arguments
      */
@@ -32,10 +34,11 @@ public class Servidor {
         
         ArrayList<Producto> prods;
         prods = new ArrayList<Producto>();
-        for (int x = 0; x < 5; x++) {
+        for (int x = 0; x < 7; x++) {
             Producto p = new Producto();
             p.setNombre("Producto " + x);
             p.setId(x);
+            p.setImagePath("p" + (x + 1) + ".jpg");
             p.setPrecio(40.40);
             p.setDescripcion("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas suscipit eleifend urna, sit amet tempus elit viverra id. Duis ultricies eu augue eu consequat. Nunc lectus quam, mollis id augue.");
             p.setExistencia(20);
