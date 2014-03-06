@@ -196,11 +196,12 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         usuarioSeleccionado = null;
+        listaUsuarios.clearSelection();
     }//GEN-LAST:event_jButton1ActionPerformed
     
     private void listaUsuariosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listaUsuariosValueChanged
         usuarioSeleccionado = (Usuario) listaUsuarios.getSelectedValue();
-        listaUsuarios.clearSelection();
+        
     }//GEN-LAST:event_listaUsuariosValueChanged
     
     private void keyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_keyReleased
@@ -279,9 +280,10 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
             throws UnknownHostException, IOException {
         this.multicastAddress = InetAddress.getByName(multicastAddress);
         DatagramPacket dp;
-        socket = new MulticastSocket(Puertos.CLIENTE_MULTICAST);//(sa);
-        socket.setTimeToLive(200);
-        //socket.setLoopbackMode(false);
+        
+        
+        socket = new MulticastSocket(Puertos.SERVIDOR_MULTICAST);
+        socket.setLoopbackMode(false);
         socket.joinGroup(this.multicastAddress);
         byte[] data = new byte[Interaccion.MAX_BUFFER_SIZE];
 
@@ -318,14 +320,14 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
             
             for (int i = 0; i < usu; i++) {
                 model.addElement(usuarios.get(i));
+                
             }
             is.close();
             s.close();
             ss.close();
         } catch (ClassNotFoundException ce) {
             System.err.println(ce.getMessage());
-        } 
-        catch (IOException ex) {
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
     }
@@ -335,22 +337,18 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
         if (!message.isEmpty()) {
             try {
                 byte[] data = new byte[Interaccion.MAX_BUFFER_SIZE];
-                int port;
-                InetAddress addr;
+                data[0] = Interaccion.MENSAJE_GRUPAL;
                 if (usuarioSeleccionado != null) {
-                    addr = usuarioSeleccionado.getAddress();
-                    port = usuarioSeleccionado.getPuerto();
-                } else {
-                    addr = this.multicastAddress;
-                    port = Puertos.SERVIDOR_MULTICAST;
+                    message = usuarioSeleccionado.getNombre() + "@" + message;
+                    
+                    data[0] = Interaccion.MENSAJE_PRIVADO;
                 }
 
                 // <editor-fold desc="Aviso de conexión">
-                data[0] = Interaccion.MENSAJE_GRUPAL;
                 byte[] nombre = message.getBytes();
                 System.arraycopy(nombre, 0, data, 1, nombre.length);
                 
-                DatagramPacket dp = new DatagramPacket(data, Interaccion.MAX_BUFFER_SIZE, addr, port);
+                DatagramPacket dp = new DatagramPacket(data, Interaccion.MAX_BUFFER_SIZE, this.multicastAddress, Puertos.SERVIDOR_MULTICAST);
                 socket.send(dp);
                 
             } catch (IOException ex) {
@@ -360,7 +358,15 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
     
     @Override
     public void nuevoMensajeHandler(NuevoMensajeEvent e) {
-        chatView.setText(chatView.getText() + e.getSender() + " dice:\n" + e.getTexto() + "\n");
+        if (e.isPrivado()) {
+            String msg = e.getTexto();
+            int at = msg.indexOf("@");
+            if (msg.substring(0, at).equals(nombreUsuario)) {
+                chatView.setText(chatView.getText() + e.getSender() + " te dice en privado:\n" + msg.substring(at + 1) + "\n");
+            }
+        } else {
+            chatView.setText(chatView.getText() + e.getSender() + " dice:\n" + e.getTexto() + "\n");
+        }
     }
     
     @Override
@@ -371,6 +377,7 @@ public class ClienteGUI extends javax.swing.JFrame implements NuevoMensajeListen
     
     @Override
     public void userAdded(Usuario u) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        usuarios.add(u);
+        model.addElement(u);
     }
 }

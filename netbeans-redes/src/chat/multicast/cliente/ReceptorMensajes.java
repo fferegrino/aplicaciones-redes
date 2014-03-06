@@ -4,6 +4,7 @@ import chat.multicast.compartido.Interaccion;
 import chat.multicast.compartido.Usuario;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 /**
@@ -11,22 +12,29 @@ import java.net.MulticastSocket;
  * @author (at)fferegrino
  */
 public class ReceptorMensajes extends Thread {
-
+    
     private MulticastSocket multicastSocket;
     NuevoMensajeListener listener;
-
+    
     void addListener(NuevoMensajeListener listener) {
         this.listener = listener;
     }
-
+    
     void removeListener() {
         this.listener = null;
     }
-
+    
     public ReceptorMensajes(MulticastSocket multicastSocket) {
         this.multicastSocket = multicastSocket;
     }
-
+    
+    public static Usuario aceptaUsuario(byte[] data, InetAddress cliente, int puerto) {
+        int nameLen = data[1];//ByteBuffer.allocateDirect(4).wrap(data, 1, 4).getInt();
+        String nombreUsuario = new String(data, 2, nameLen);
+        Usuario u = new Usuario(cliente, puerto, nombreUsuario);
+        return u;
+    }
+    
     @Override
     public void run() {
         while (true) {
@@ -36,10 +44,19 @@ public class ReceptorMensajes extends Thread {
                 byte[] data = dp.getData();
                 switch (data[0]) {
                     case Interaccion.MENSAJE_GRUPAL:
-                    //case Interaccion.MENSAJE_PRIVADO:
-                        NuevoMensajeEvent e = new NuevoMensajeEvent(this, dp.getAddress(), new String(data), dp.getPort());
+                        
+                        
+                        NuevoMensajeEvent e = new NuevoMensajeEvent(this, dp.getAddress(), new String(data, 1, Interaccion.MAX_BUFFER_SIZE - 1), dp.getPort());
                         if (listener != null) {
                             listener.nuevoMensajeHandler(e);
+                        }
+                        break;
+                    case Interaccion.MENSAJE_PRIVADO:
+                        String msg = new String(data, 1, Interaccion.MAX_BUFFER_SIZE - 1);
+                        NuevoMensajeEvent event = new NuevoMensajeEvent(this, dp.getAddress(), msg, dp.getPort());
+                        event.setPrivado(true);
+                        if (listener != null) {
+                            listener.nuevoMensajeHandler(event);
                         }
                         break;
                     case Interaccion.DESPEDIDA_USUARIO:
@@ -48,7 +65,14 @@ public class ReceptorMensajes extends Thread {
                             listener.userRemoved(u);
                         }
                         break;
-
+                    
+                    case Interaccion.SALUDO_CLIENTE:
+                        Usuario nuevo = aceptaUsuario(data, dp.getAddress(), dp.getPort());
+                        if (listener != null) {
+                            listener.userAdded(nuevo);
+                        }
+                        break;
+                    
                 }
             } catch (IOException ex) {
             }

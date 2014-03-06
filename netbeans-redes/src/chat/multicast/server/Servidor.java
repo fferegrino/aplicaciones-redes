@@ -24,16 +24,7 @@ public class Servidor {
 
     public static void main(String[] args) {
         usuarios = new ArrayList<Usuario>(); //new HashMap<String, InetAddress>();
-        for (int x = 0; x < 10; x++) {
-            try {
-                Usuario ux = new Usuario(InetAddress.getByName("192.168.1." + (x + 1)), 2000, "Usuario " + x);
-                usuarios.add(ux);
-            } catch (UnknownHostException ex) {
-                Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
         try {
-            //SocketAddress sa = new InetSocketAddress("192.168.1.70", Puertos.SERVIDOR_MULTICAST);
 
             MulticastSocket socket = new MulticastSocket(Puertos.SERVIDOR_MULTICAST);
             socket.setTimeToLive(50);
@@ -49,13 +40,13 @@ public class Servidor {
                 switch (data[0]) {
                     case Interaccion.SALUDO_CLIENTE:
                         Usuario nuevo = aceptaUsuario(data, cliente, puerto);
-                        //enviaListaUsuarios(nuevo);
+                        enviaListaUsuarios(nuevo);
+                        System.out.println("Envie lista a " + cliente);
                         usuarios.add(nuevo);
                         break;
                     case Interaccion.DESPEDIDA_USUARIO:
                         Usuario u = new Usuario(cliente, puerto, null);
                         usuarios.remove(u);
-                        log("Usuario despedida");
                         break;
                     default:
                         System.out.println("Mensaje de " + paquete.getSocketAddress() + " no procesado");

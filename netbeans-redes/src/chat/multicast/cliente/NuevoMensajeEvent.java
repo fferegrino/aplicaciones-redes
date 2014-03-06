@@ -18,6 +18,15 @@ public class NuevoMensajeEvent extends EventObject{
     
     
     private int puerto;
+    boolean privado;
+
+    public void setPrivado(boolean privado) {
+        this.privado = privado;
+    }
+
+    public boolean isPrivado() {
+        return privado;
+    }
     private InetAddress sender;
     private String texto;
 
