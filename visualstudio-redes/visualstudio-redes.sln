@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carrito.Shared", "Carrito.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carrito.Servidor", "Carrito.Servidor\Carrito.Servidor.csproj", "{706B2256-B9EA-449C-B18C-2C8B5EF98788}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServer", "WebServer\WebServer.csproj", "{5CE4BD34-A280-40C9-9A07-E6F381473670}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{706B2256-B9EA-449C-B18C-2C8B5EF98788}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{706B2256-B9EA-449C-B18C-2C8B5EF98788}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{706B2256-B9EA-449C-B18C-2C8B5EF98788}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CE4BD34-A280-40C9-9A07-E6F381473670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CE4BD34-A280-40C9-9A07-E6F381473670}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CE4BD34-A280-40C9-9A07-E6F381473670}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CE4BD34-A280-40C9-9A07-E6F381473670}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
