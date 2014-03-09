@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  * @author usuario
  */
 public class Cliente {
-
+    
     public final static int VER_CARRITO = 1;
     public final static int COMPRA = 3;
     public final static int ACTUALIZAR_CARRITO = 2;
@@ -37,7 +37,7 @@ public class Cliente {
     /**
      * @param args the command line arguments
      */
-    public ArrayList<Producto> solicitaProductos() throws Exception {
+    public ArrayList<Producto> solicitaProductos(boolean solicitaImagenes) throws Exception {
         ArrayList<Producto> res = new ArrayList<Producto>();
         Socket s = new Socket(InetAddress.getByName("localhost"), 4040);
         ObjectOutputStream os = new ObjectOutputStream(s.getOutputStream());
@@ -51,25 +51,29 @@ public class Cliente {
         while (cantidadProductos-- > 0) {
             res.add((Producto) is.readObject());
         }
-        os.writeInt(SOLICITAR_IMAGENES);
+        if (solicitaImagenes) {
+            os.writeInt(SOLICITAR_IMAGENES);
+        } else {
+            os.writeInt(0);
+        }
         os.flush();
-        if (SOLICITAR_IMAGENES == 1) {
+        if (solicitaImagenes) {
             leeImagenes(os, is);
         }
-
+        
         os.close();
         is.close();
         s.close();
         return res;
     }
-
+    
     public int realizaOrden(int productoId, int cantidad) throws Exception {
         Orden o = new Orden(cantidad, productoId);
         Socket s = new Socket(InetAddress.getByName("localhost"), 4040);
         ObjectOutputStream os = new ObjectOutputStream(s.getOutputStream());
         ObjectInputStream is = new ObjectInputStream(s.getInputStream());
         os.flush();
-
+        
         os.writeInt(Interaccion.CONFIRMAR_COMPRA);
         os.writeObject(o);
         int resultado = is.readInt();
@@ -78,7 +82,7 @@ public class Cliente {
         s.close();
         return resultado;
     }
-
+    
     private void leeImagenes(ObjectOutputStream os, ObjectInputStream is) {
         try {
             int totalArchivos = is.readInt(), resultadoLectura;
@@ -116,8 +120,8 @@ public class Cliente {
                 System.out.println("Escritura terminada");
                 // Cerramos el FileOutputStream
                 fos.close();
-
-
+                
+                
             }
         } catch (IOException ex) {
         }

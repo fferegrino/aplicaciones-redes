@@ -62,6 +62,7 @@ public class CarritoGUI extends javax.swing.JFrame {
         labelPrecio = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jDescription = new javax.swing.JTextArea();
+        jCheckBox1 = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -152,6 +153,9 @@ public class CarritoGUI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jCheckBox1.setSelected(true);
+        jCheckBox1.setText("Imágenes");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -159,8 +163,11 @@ public class CarritoGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
-                    .addComponent(actualizaButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(actualizaButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelCompras, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -173,7 +180,9 @@ public class CarritoGUI extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jScrollPane1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(actualizaButton))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(actualizaButton)
+                            .addComponent(jCheckBox1)))
                     .addComponent(panelCompras, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -183,7 +192,7 @@ public class CarritoGUI extends javax.swing.JFrame {
 
     private void actualizaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actualizaButtonActionPerformed
         try {
-            ArrayList<Producto> solicitaProductos = cliente.solicitaProductos();
+            ArrayList<Producto> solicitaProductos = cliente.solicitaProductos(jCheckBox1.isSelected());
             defaultModelProducto.clear();
             for (Producto p : solicitaProductos) {
                 defaultModelProducto.addElement(p);
@@ -272,6 +281,7 @@ public class CarritoGUI extends javax.swing.JFrame {
     private javax.swing.JButton actualizaButton;
     private javax.swing.JButton buttonCompra;
     private javax.swing.JLabel imagenLabel;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JTextArea jDescription;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
