@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Http\HttpHeader.cs" />
     <Compile Include="Http\Readers\HttpHeaderReader.cs" />
+    <Compile Include="Http\Writer\HttpFileWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Readers\FileReader.cs" />
     <Compile Include="Readers\ObjectReader.cs" />
