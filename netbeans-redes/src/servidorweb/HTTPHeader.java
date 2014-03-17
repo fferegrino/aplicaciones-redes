@@ -1,7 +1,10 @@
 package servidorweb;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 /**
@@ -10,6 +13,7 @@ import java.util.HashMap;
  */
 public class HTTPHeader {
 
+    private final static String CONTENT_LENGTH_FLAG = "th:";
     public final static String METHOD_GET = "GET";
     public final static String METHOD_POST = "POST";
     BufferedReader br;
@@ -41,8 +45,8 @@ public class HTTPHeader {
     private String file;
     private HashMap<String, String> parametros;
 
-    public HTTPHeader(BufferedReader br) {
-        this.br = br;
+    public HTTPHeader(InputStream is) {
+        this.br = new BufferedReader(new InputStreamReader(is));
         this.parametros = new HashMap<String, String>();
     }
 
@@ -51,27 +55,32 @@ public class HTTPHeader {
         String[] fields = s.split(" ");
         method = fields[0];
         file = fields[1];
+        int qmark = file.indexOf("?");
+        String fullParams = null;
+        if (qmark >= 0) {
+            fullParams = file.substring(qmark + 1);
+            file = file.substring(0, qmark);
+        }
         if (METHOD_GET.equals(method)) {
-            int qmark = file.indexOf("?");
-            if (qmark >= 0) {
-                String fullParams = file.substring(qmark + 1);
-                file = file.substring(0, qmark);
-                fillParams(fullParams.split("&"));
-            }
+            
         } else if (METHOD_POST.equals(method)) {
             String xD = br.readLine();
-            while ( 
-                    xD.length() > 0
-//                    !"\r\n".equals(xD) || 
-//                    !"\n\r".equals(xD)
-                    ) {
-                System.out.println("Leí " + xD.length());
+            int mxRead = 0;
+            while (xD.length() > 0) {
                 xD = br.readLine();
+                if (xD.indexOf(CONTENT_LENGTH_FLAG) > 0) {
+                    mxRead = Integer.parseInt(
+                            xD.substring(xD.indexOf(CONTENT_LENGTH_FLAG)
+                            + CONTENT_LENGTH_FLAG.length() + 1));
+                }
             }
-            String params = br.readLine();
-            System.out.println(params);
+            char[] data = new char[mxRead];
+            br.read(data, 0, mxRead);
+            fullParams = new String(data);
         }
-        //br.close();
+        if(fullParams != null) {
+            fillParams(fullParams.split("&"));
+        }
     }
 
     private void fillParams(String[] paramString) {

@@ -2,6 +2,7 @@ package servidorweb;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -22,7 +23,7 @@ import java.util.HashMap;
 public class Peticion extends Thread {
 
     public static final String SERVER_ROUTE = "C:\\server";
-    public static final String INDEX = "\\index.html";
+    public static final String INDEX = "/index.html";
     public static final int BUFFER_SIZE = 1024;
     private byte[] buffer = new byte[BUFFER_SIZE];
     private Socket socket;
@@ -37,28 +38,28 @@ public class Peticion extends Thread {
     @Override
     public void run() {
         try {
-            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             bos = new BufferedOutputStream(socket.getOutputStream());
             pw = new PrintWriter(new OutputStreamWriter(bos));
 
-            HTTPHeader header = new HTTPHeader(br);
+            HTTPHeader header = new HTTPHeader(socket.getInputStream());
             header.parse();
             // Archivo solicitado
             String file = header.getFile();
             file = file.equals("/") ? INDEX : file;
 
 
-            System.out.println(header.getMethod() + " " + file);
+            System.out.println("Petición: " + header.getMethod() + " " + file);
             HashMap<String, String> parametros = header.getParametros();
-            System.out.println("Parámetros:");
-            for (String s : parametros.keySet()) {
-                System.out.println(String.format("\t%s = %s", s, parametros.get(s)));
+            if (parametros.keySet().size() > 0) {
+                System.out.println("Parámetros:");
+                for (String s : parametros.keySet()) {
+                    System.out.println(String.format("\t%s = %s", s, parametros.get(s)));
+                }
             }
 
             sendFile(file);
 
             bos.close();
-            br.close();
             pw.close();
 
 
