@@ -23,3 +23,7 @@ build
 [Rr]elease
 obj
 /netbeans-redes/dist/
+
+# C++, C #
+*.out
+*.o
