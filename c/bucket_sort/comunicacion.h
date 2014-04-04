@@ -3,6 +3,6 @@
 #include <vector>
 
 int comunicacion();
-bool enviaNumeros(std::vector<int> numeros, int sd, char * server, int port);
+bool ordenaNumeros(std::vector<int> &numeros, int sd, char * server, int port);
 
 #endif

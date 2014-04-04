@@ -11,7 +11,7 @@ int comunicacion(){
 	return socket(AF_INET,SOCK_STREAM,0); 
 }
 
-bool enviaNumeros(std::vector<int> numeros, int sd, char * server, int port){
+bool ordenaNumeros(std::vector<int> &numeros, int sd, char * server, int port){
 	struct hostent *host; 
     host=gethostbyname(server); 
     if(host==NULL){ 
@@ -31,10 +31,15 @@ bool enviaNumeros(std::vector<int> numeros, int sd, char * server, int port){
 	int nums = numeros.size();
 	int dato_red = htonl(nums);
 	int enviados = write(sd, &dato_red, sizeof(dato_red)); // Error checking missing
+	int recibidos;
 	for(int i = 0; i < nums; i++){
 		dato_red = htonl(numeros[i]);
 		enviados = write(sd, &dato_red, sizeof(dato_red)); // Error checking missing
 	}
-	
+	numeros.clear();
+	for(int i = 0; i < nums; i++){
+		recibidos = read(sd, &dato_red, sizeof(dato_red));
+		numeros.push_back(ntohl(dato_red));
+	}
 	return true;
 }

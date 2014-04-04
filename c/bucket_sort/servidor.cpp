@@ -53,16 +53,20 @@ void atiende(int sd){
 	int nums;
 	int n;
 	int recibidos = read(dc, &nums, sizeof(nums));  // Error checking missing
+	int enviados;
 	nums = ntohl(nums);
 	printf("Vector de %d numeros\n",nums);
 	
 	for(int i = 0; i < nums; i++){
-		recibidos = read(dc, &n, sizeof(n));
+		recibidos = read(dc, &n, sizeof(n)); // Error checking missing
 		numeros.push_back(ntohl(n));
 	}
+	
 	std::sort(numeros.begin(), numeros.end());
+	
 	for(int i = 0; i < nums; i++){
-		printf(" %d ",numeros[i]);
+		n = htonl(numeros[i]);
+		enviados = write(dc, &n, sizeof(n)); // Error checking missing
 	}
 	
 }
