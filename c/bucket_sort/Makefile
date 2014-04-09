@@ -5,7 +5,7 @@ test:
 cliente.out: mirandom.o comunicacion.o
 	g++ -o cliente.out main.cpp mirandom.o comunicacion.o -lpthread -std=c++11
 servidor.out:
-	g++ -o servidor.out servidor.cpp -std=c++11
+	g++ -o servidor.out servidor.cpp -lpthread -std=c++11
 mirandom.o:
 	g++ -c mirandom.cpp -std=c++11
 comunicacion.o:

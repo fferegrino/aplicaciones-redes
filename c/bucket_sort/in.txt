@@ -1,6 +1,9 @@
-1
-localhost 5551
+5
+localhost 5001
 localhost 5002
+localhost 5003
+localhost 5004
+localhost 5005
 192.148.4.6 5003
 192.148.4.6 5004
 192.148.4.6 5005

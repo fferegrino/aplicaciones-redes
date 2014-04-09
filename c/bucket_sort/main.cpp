@@ -7,7 +7,7 @@
 #include <algorithm>
 #include "mirandom.h"
 #include "comunicacion.h"
-#define DEFNUMS 350
+#define DEFNUMS 3500
 //using namespace std;
 char ip[16];
 int localPort = 5432;
@@ -55,6 +55,11 @@ int main(int argc, char** argv){
 	
 	for (int i = 0; i < cubetas; i++) 
 		pthread_join (hilos[i], NULL);
+	for (int i = 0; i < cubetas; i++){
+		for(int j = 0; j < auxiliares[i].numeros.size(); j++){
+			printf(" %d ",auxiliares[i].numeros[j]);
+		}
+	}
 	return 0;
 }
 
@@ -62,13 +67,8 @@ int main(int argc, char** argv){
 void * procesaCubeta(void * auxiliar){
 	AuxHiloBucket * a = (AuxHiloBucket *) auxiliar;
 	int vsize = sizeof(std::vector<int>) + (sizeof(int) * a->numeros.size());
-	//printf("Cubeta se va a %s:%d con %d bytes\n",a->ip,a->puerto,vsize);
-	//printf("Numeros %d\n",a->numeros.size());
 	int sd = comunicacion();
 	bool verdadero = ordenaNumeros(a->numeros,sd,a->ip,a->puerto);
-	for(int i = 0; i < a->numeros.size(); i++){
-		printf(" %d ",a->numeros[i]);
-	}
 }
 
 void rellenaCubetas(AuxHiloBucket * arr, int cubetas){	
