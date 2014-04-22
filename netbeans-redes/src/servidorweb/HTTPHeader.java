@@ -62,7 +62,7 @@ public class HTTPHeader {
             file = file.substring(0, qmark);
         }
         if (METHOD_GET.equals(method)) {
-            
+            // TODO: Algo 
         } else if (METHOD_POST.equals(method)) {
             String xD = br.readLine();
             int mxRead = 0;
