@@ -39,6 +39,12 @@ Implementar el juego del buscaminas con una arquitectura cliente-servidor
 
 ***  
 
+#### Práctica 5: "Bucket sort distribuído (Sockets e hilos)" [C++]
+
+[c/bucket_sort C++](/c/bucket_sort)
+
+***  
+
 #### Extras
 
 ##### Tarea 1: "FTP empleando sockets de datagrama"
