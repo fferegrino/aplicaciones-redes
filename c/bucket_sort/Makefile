@@ -1,7 +1,7 @@
 run: cliente.out servidor.out
 test: 
 	clear
-	./cliente.out < in.txtcliente.out servidor.out
+	./cliente.out < in.txt cliente.out servidor.out
 cliente.out: mirandom.o comunicacion.o
 	g++ -o cliente.out main.cpp mirandom.o comunicacion.o -lpthread -std=c++11
 servidor.out:
